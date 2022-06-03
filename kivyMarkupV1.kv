@@ -1,0 +1,442 @@
+#:kivy 2.1
+#:import Factory kivy.factory.Factory
+
+#Page 1 Load/Save questions
+#Page 2 Load/Save user
+#Page 3 Add Questions
+#Page 4 Study
+#Page 5 Main menu - Default
+
+<StyleButton@Button>:
+    markup: True
+    text_size: self.size
+    halign: 'center'
+    valign: 'middle'
+    font_size: '25sp'
+    background_color: (.3,.5,1,1)
+
+<ImportTestDialog>:
+    BoxLayout:
+        orientation: 'vertical'
+        FileChooserListView:
+            id: filechooser
+            multiselect: False
+            filters: ['*.csv']
+            path: root.path
+        BoxLayout: 
+            orientation: 'horizontal'
+            size_hint_y: None
+            height: 30
+            StyleButton:
+                text: 'Import'
+                on_press: root.importCsv(filechooser.selection[0], filechooser.path)
+                on_release: root.manager.current = 'loadQ'
+            Button:
+                text: 'Cancel'
+                font_size: '25sp'
+                on_release: root.manager.current = 'loadQ'
+
+<ImportQuestionsDialog>:
+    BoxLayout:
+        orientation: 'vertical'
+        FileChooserListView:
+            id: filechooser
+            multiselect: False
+            filters: ['*.csv']
+            path: root.path
+        BoxLayout: 
+            orientation: 'horizontal'
+            size_hint_y: None
+            height: 30
+            StyleButton:
+                text: 'Import'
+                on_press: root.importCsv(filechooser.selection[0])
+                on_release: root.manager.current = 'loadQ'
+            Button:
+                text: 'Cancel'
+                font_size: '25sp'
+                on_release: root.manager.current = 'loadQ'
+
+<SaveQDialog>:
+    auto_dismiss: False
+    BoxLayout:
+        orientation: 'vertical'
+        FileChooserListView:
+            id: filechooser
+            multiselect: False
+            on_selection: fileName.text = self.selection and self.selection[0] or ''
+            filters: ['*.q']
+            path: root.path
+        TextInput:
+            id: fileName
+            multiline: False
+            size_hint_y: .2
+        BoxLayout: 
+            orientation: 'horizontal'
+            size_hint_y: None
+            height: 30
+            StyleButton:
+                text: 'Save'
+                on_press: root.save(filechooser.path, fileName.text)
+                on_release: root.manager.current = 'loadQ'
+            Button:
+                text: 'Cancel'
+                font_size: '25sp'
+                on_release: root.manager.current = 'loadQ'
+
+<LoadQDialog>:
+    BoxLayout:
+        orientation: 'vertical'
+        FileChooserListView:
+            id: filechooser
+            multiselect: False
+            filters: ['*.q']
+            path: root.path
+        BoxLayout: 
+            orientation: 'horizontal'
+            size_hint_y: None
+            height: 30
+            StyleButton:
+                text: 'Load'
+                on_press: root.load(filechooser.selection[0])
+                on_release: root.manager.current = 'loadQ'
+            Button:
+                text: 'Cancel'
+                font_size: '25sp'
+                on_release: root.manager.current = 'loadQ'
+
+<LoadQuestions>:
+    BoxLayout:
+        orientation: 'vertical'
+        Label:
+            id: currentQSet
+            text: ''
+        BoxLayout:
+            orientation: 'horizontal'
+            StyleButton:
+                text: 'Load Questions'
+                on_release: root.manager.current = 'LoadQDialog'
+            StyleButton:
+                text: 'Save Questions'
+                on_release: root.manager.current = 'SaveQDialog'
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint_y: .5
+            
+            StyleButton:
+                text: 'Import Test Result'
+                on_release: root.manager.current = 'ImportTestDialog'
+        BoxLayout:
+            orientation: 'horizontal'
+            StyleButton:
+                text: 'Clear Current Question Pool'
+                on_release: root.clearQuestions()
+            StyleButton:
+                text: 'Import Questions from CSV'
+                on_release: root.manager.current = 'ImportQuestionsDialog'
+
+        StyleButton:
+            text: 'Return to Menu'
+            on_release: root.manager.current = 'menu'
+
+<LoadUDialog>:
+    BoxLayout:
+        orientation: 'vertical'
+        FileChooserListView:
+            id: filechooser
+            multiselect: False
+            filters: ['*.u']
+            path: root.path
+        BoxLayout: 
+            orientation: 'horizontal'
+            size_hint_y: None
+            height: 30
+            StyleButton:
+                text: 'Load'
+                on_press: root.load(filechooser.selection[0])
+                on_release: root.manager.current = 'loadU'
+            Button:
+                text: 'Cancel'
+                font_size: '25sp'
+                on_release: root.manager.current = 'loadU'
+
+<SaveUDialog>:
+    auto_dismiss: False
+    BoxLayout:
+        orientation: 'vertical'
+        FileChooserListView:
+            id: filechooser
+            multiselect: False
+            on_selection: fileName.text = self.selection and self.selection[0] or ''
+            filters: ['*.u']
+            path: root.path
+        TextInput:
+            id: fileName
+            multiline: False
+            size_hint_y: .2
+        BoxLayout: 
+            orientation: 'horizontal'
+            size_hint_y: None
+            height: 30
+            StyleButton:
+                text: 'Save'
+                on_press: root.save(filechooser.path, fileName.text)
+                on_release: root.manager.current = 'loadU'
+            Button:
+                text: 'Cancel'
+                font_size: '25sp'
+                on_release: root.manager.current = 'loadU'
+
+<LoadUser>:
+    BoxLayout:
+        orientation: 'vertical'
+        Label:
+            id: eloLevel
+            text: ''
+            font_size: 50
+            size_hint_y: 1.5
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint_y: .25
+            Label:
+                text: 'Current Username:'
+                valign: 'middle'
+            TextInput:
+                id: userName
+                multiline: False
+                text: ''
+                halign: 'center'
+        StyleButton:
+            text: 'Save Name'
+            on_release: root.updateUserName(userName.text)
+        BoxLayout:
+            orientation: 'horizontal'
+            StyleButton:
+                text: 'Load User'
+                on_release: root.manager.current = 'LoadUDialog'
+            StyleButton:
+                text: 'Save User'
+                on_release: root.manager.current = 'SaveUDialog'
+
+        StyleButton:
+            text: 'Return to Menu'
+            on_release: root.manager.current = 'menu'
+
+<AddQuestions>:
+    BoxLayout:
+        orientation: 'vertical'
+        BoxLayout:
+            orientation: 'vertical'
+            Label:
+                text: 'Enter Question Here:'
+                valign: 'bottom'
+            TextInput:
+                id: question
+                focus: True
+                do_wrap: True
+                write_tab: False
+            Label:
+                text: 'Difficulty of Question: ' + str(slider.value)
+                valign: 'bottom'
+            Slider:
+                id: slider
+                min: 1
+                max: 5
+                step: 1
+                value: 3
+                orientation: 'horizontal'
+        GridLayout:
+            rows: 2
+            BoxLayout:
+                orientation: 'vertical'
+                Label:
+                    text: 'correct Answer Here:'
+                    valign: 'bottom'
+                TextInput:
+                    id: correctAnswer
+                    multiline: False
+                    write_tab: False
+            BoxLayout:
+                orientation: 'vertical'
+                Label:
+                    text: 'Wrong Answer Here:'
+                    valign: 'bottom'
+                TextInput:
+                    id: wrongOne
+                    multiline: False
+                    write_tab: False
+            BoxLayout:
+                orientation: 'vertical'
+                Label:
+                    text: 'Wrong Answer Here:'
+                    valign: 'bottom'
+                TextInput:
+                    id: wrongTwo
+                    multiline: False
+                    write_tab: False
+            BoxLayout:
+                orientation: 'vertical'
+                Label:
+                    text: 'Wrong Answer Here:'
+                    valign: 'bottom'
+                TextInput:
+                    id: wrongThree
+                    multiline: False
+                    write_tab: False
+        BoxLayout:
+            orientation: 'horizontal'
+            StyleButton:
+                text: 'Add Question'
+                on_release: root.addQuestion()
+            StyleButton:
+                text: 'Return to Menu'
+                on_release: root.manager.current = 'menu'
+
+
+
+
+<Study>:
+    BoxLayout:
+        orientation: 'vertical'
+        Label:
+            id: currentQ
+            text: ''
+        GridLayout:
+            size_hint_y: 1.5
+            rows: 2
+            StyleButton:
+                id: answerBOne
+                text: ''
+                on_release: root.pickAnswer(1)
+            StyleButton:
+                id: answerBTwo
+                text: ''
+                on_release: root.pickAnswer(2)
+            StyleButton:
+                id: answerBThree
+                text: ''
+                on_release: root.pickAnswer(3)
+            StyleButton:
+                id: answerBFour
+                text: ''
+                on_release: root.pickAnswer(4)
+        StyleButton:
+            text: 'Return to Menu'
+            on_release: root.manager.current = 'menu'
+
+<ReportPage>:
+    GridLayout:
+        rows: 2
+        StyleButton:
+            text: 'Create Question Report'
+            on_release: root.qReport()
+        StyleButton:
+            text: "Line Graph of Current User's score"
+            on_release: root.manager.current = 'lineGraph'
+        StyleButton:
+            text: "Bar Graph of Question Set's score"
+            on_release: root.manager.current = 'barGraph'
+        StyleButton:
+            text: "Stem Plot of Multiple User's score"
+            on_release: root.manager.current = 'stemSelect'
+        StyleButton:
+            text: 'Menu'
+            on_release: root.manager.current = 'menu'
+
+<BarGraphScorePage>:
+    GridLayout:
+        rows: 2
+        BoxLayout:
+            orientation: 'horizontal'
+            id: graph
+            size_hint_y: 1.5
+        
+        StyleButton:
+            text: 'Go back'
+            on_release: root.manager.current = 'reports'
+
+<StemPlotSelectPage>:
+    BoxLayout:
+        orientation: 'vertical'
+        FileChooserIconView:
+            id: filechooser
+            multiselect: True
+            filters: ['*.u']
+            path: root.path
+        BoxLayout: 
+            orientation: 'horizontal'
+            size_hint_y: None
+            height: 30
+            StyleButton:
+                text: 'Select'
+                on_press: root.selectUsers(filechooser.selection, filechooser.path)
+                on_release: root.manager.current = 'stemScore'
+            Button:
+                text: 'Cancel'
+                font_size: '25sp'
+                on_release: root.manager.current = 'reports'
+
+<StemPlotScorePage>:
+    BoxLayout:
+        orientation: 'vertical'
+        BoxLayout:
+            orientation: 'vertical'
+            id: stemPlot
+        StyleButton:
+            text: 'Go Back'
+            on_release: root.manager.current = 'reports'
+            size_hint_y: .3
+
+
+<LineGraphScorePage>:
+    GridLayout:
+        rows: 2
+        BoxLayout:
+            orientation: 'horizontal'
+            id: graph
+            size_hint_y: 1.5
+        BoxLayout:
+            orientation: 'vertical'
+            Label:
+                id: lineGraphLabel
+                text: ''
+                valign: 'top'
+                size_hint_y: .5
+            StyleButton:
+                text: 'Go back'
+                on_release: root.manager.current = 'reports'
+
+<MainMenu>:
+    BoxLayout:
+        orientation: 'vertical'
+        Label:
+            text: 'Main Menu'
+            markup: True
+            text_size: self.size
+            halign: 'center'
+            valign: 'middle'
+            font_size: '30sp'
+            size_hint_y: .3
+        GridLayout:
+            rows: 2
+            StyleButton:
+                text: 'Load/Save Questions'
+                on_release: root.manager.current = 'loadQ'
+            StyleButton:
+                text: 'Load/Save User'
+                on_release: root.manager.current = 'loadU'
+            StyleButton:
+                text: 'Add Questions'
+                on_release: root.manager.current = 'addQ'
+            StyleButton:
+                text: 'Study'
+                on_release: root.manager.current = 'study'
+            StyleButton:
+                text: 'Reports'
+                on_release: root.manager.current = 'reports'
+            StyleButton:
+                text: 'Quit'
+                on_release: app.stop()
+        
+
+            
